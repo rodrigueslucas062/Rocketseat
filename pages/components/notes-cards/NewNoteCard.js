@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const NewNoteCards = () => {
+const NewNoteCards = ({ onNoteCreated }) => {
   const [shouldShowOnBoarding, setShouldShowOnBoarding] = useState(true);
   const [content, setContent] = useState('')
 
@@ -21,8 +21,10 @@ const NewNoteCards = () => {
 
   function hanleSaveNote(event) {
     event.preventDefault()
-    console.log(content)
+    onNoteCreated(content)
     toast.success('Nota criada com sucesso')
+    setContent('')
+    setShouldShowOnBoarding(true)
   }
 
   return (
@@ -62,7 +64,11 @@ const NewNoteCards = () => {
                     automaticamente.
                   </p>
                 ) : (
-                  <textarea autoFocus className="text-sm leading-6 text-slate-400 bg-transparent resize-none flex-1 outline-none" onChange={handleContentchanged}/>
+                  <textarea
+                    autoFocus
+                    className="text-sm leading-6 text-slate-400 bg-transparent resize-none flex-1 outline-none"
+                    onChange={handleContentchanged}
+                    value={content} />
                 )}
               </div>
               <button type="submit" className="w-full bg-lime-400 py-4 text-center text-sm text-lime-950 outline-none font-medium hover:bg-lime-500">
