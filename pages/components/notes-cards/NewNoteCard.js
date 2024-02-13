@@ -6,30 +6,71 @@ import { toast } from "sonner";
 
 const NewNoteCards = ({ onNoteCreated }) => {
   const [shouldShowOnBoarding, setShouldShowOnBoarding] = useState(true);
-  const [content, setContent] = useState('')
+  const [content, setContent] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
 
   function handleStartEditor() {
     setShouldShowOnBoarding(false);
   }
 
   function handleContentchanged(event) {
-    setContent(event.target.value)
+    setContent(event.target.value);
     if (event.target.value == "") {
       setShouldShowOnBoarding(true);
     }
   }
 
   function hanleSaveNote(event) {
-    event.preventDefault()
-    onNoteCreated(content)
-    toast.success('Nota criada com sucesso')
-    setContent('')
-    setShouldShowOnBoarding(true)
+    event.preventDefault();
+    if (content === "") {
+      return;
+    }
+
+    onNoteCreated(content);
+    toast.success("Nota criada com sucesso");
+    setContent("");
+    setShouldShowOnBoarding(true);
+  }
+
+  function handleStartRecording(event) {
+    const isSpeechRecognitionAPIAvaliable =
+      "SpeechRecognition" in window || "webkitSpeechRecognition" in window;
+    if (!isSpeechRecognitionAPIAvaliable) {
+      alert("Seu navegador não duporta essa função");
+      return;
+    }
+
+    setIsRecording(true);
+    setShouldShowOnBoarding(false);
+
+    const SpeechRecognitionAPI =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const speechRecognition = new SpeechRecognitionAPI();
+
+    speechRecognition.lang = "pt-BR";
+    speechRecognition.continuous = true;
+    speechRecognition.maxAlternatives = 1;
+    speechRecognition.interimResults = true;
+
+    speechRecognition.onresult = (event) => {
+      const transcription = Array.from(event.results).reduce((text, result) => {
+        return text.concat(result[0].transcript);
+      }, "");
+      setContent(transcription);
+    };
+    speechRecognition.onerror = (event) => {
+      console.error(event);
+    };
+    speechRecognition.start();
+  }
+
+  function handleStopRecording() {
+    setIsRecording(false);
   }
 
   return (
     <Dialog.Root>
-      <Dialog.Trigger className="rounded-md bg-slate-700 p-5 space-y-3 overflow-hidden relative hover:ring-2 hover:ring-slate-600">
+      <Dialog.Trigger className="flex flex-col rounded-md text-left bg-slate-700 p-5 space-y-3 overflow-hidden relative hover:ring-2 hover:ring-slate-600">
         <span className="text-sm font-medium text-slate-200">
           Adicionar nota
         </span>
@@ -46,19 +87,28 @@ const NewNoteCards = ({ onNoteCreated }) => {
               <X className="size-5" />
             </Dialog.Close>
 
-            <form onSubmit={hanleSaveNote} className="flex-1 flex flex-col" action="">
+            <form className="flex-1 flex flex-col" action="">
               <div className="flex flex-1 flex-col gap-3 p-5">
                 <span className="text-sm font-medium text-slate-200">
                   Adicionar nota
                 </span>
+
                 {shouldShowOnBoarding ? (
                   <p className="text-sm leading-6 text-slate-400">
                     Comece{" "}
-                    <button className="font-medium text-lime-400 hover:underline">
+                    <button
+                      type="button"
+                      onClick={handleStartRecording}
+                      className="font-medium text-lime-400 hover:underline"
+                    >
                       gravando uma nota em áudio
-                    </button>
-                    , ou se preferir{" "}
-                    <button onClick={handleStartEditor} className="font-medium text-lime-400 hover:underline">
+                    </button>{" "}
+                    ou se preferir{" "}
+                    <button
+                      type="button"
+                      onClick={handleStartEditor}
+                      className="font-medium text-lime-400 hover:underline"
+                    >
                       utilize apenas texto
                     </button>{" "}
                     automaticamente.
@@ -68,12 +118,29 @@ const NewNoteCards = ({ onNoteCreated }) => {
                     autoFocus
                     className="text-sm leading-6 text-slate-400 bg-transparent resize-none flex-1 outline-none"
                     onChange={handleContentchanged}
-                    value={content} />
+                    value={content}
+                  />
                 )}
               </div>
-              <button type="submit" className="w-full bg-lime-400 py-4 text-center text-sm text-lime-950 outline-none font-medium hover:bg-lime-500">
-                Salvar nota?
-              </button>
+
+              {isRecording ? (
+                <button
+                  type="button"
+                  onClick={handleStopRecording}
+                  className="w-full flex items-center justify-center gap-2 bg-slate-900 py-4 text-center text-sm text-slate-300 outline-none font-medium hover:text-slate-100"
+                >
+                  <div className="size-3 rounded-full bg-red-500 animate-pulse" />
+                  Gravando... (clique para parar)
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={hanleSaveNote}
+                  className="w-full bg-lime-400 py-4 text-center text-sm text-lime-950 outline-none font-medium hover:bg-lime-500"
+                >
+                  Salvar nota?
+                </button>
+              )}
             </form>
           </DialogContent>
         </Dialog.DialogOverlay>
@@ -81,5 +148,4 @@ const NewNoteCards = ({ onNoteCreated }) => {
     </Dialog.Root>
   );
 };
-
 export default NewNoteCards;
