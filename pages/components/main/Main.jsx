@@ -32,6 +32,14 @@ const Main = () => {
         setSearch(query)
     }
 
+    function handleDeleteNote(id) {
+        const notesArray = notes.filter(note => {
+            return note.id !== id
+        })
+        setNotes(notesArray)
+        localStorage.setItem('notes', JSON.stringify(notesArray))
+    }
+
     const filteredNotes = search !== ''
         ? notes.filter(note => note.content.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
         : notes
@@ -53,7 +61,7 @@ const Main = () => {
                 <NewNoteCards onNoteCreated={onNoteCreated} />
 
                 {filteredNotes.map(note => {
-                    return <NoteCards key={note.id} date={note.date} content={note.content} />
+                    return <NoteCards key={note.id} date={note.date} content={note.content} handleDeleteNote={() => handleDeleteNote(note.id)} />
                 })}
             </div>
         </div>

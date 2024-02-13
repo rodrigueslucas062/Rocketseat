@@ -5,11 +5,18 @@ import { ptBR } from "date-fns/locale";
 import { X } from "lucide-react";
 
 const NoteCardProps = {
+  id: String, 
   date: Date,
   content: String,
 };
 
-export function NoteCards(NoteCardProps) {
+const handleDeleteNote = {
+  id: String, 
+  date: Date,
+  content: String,
+}
+
+export function NoteCards(NoteCardProps, handleDeleteNote) {
   return (
     <Dialog.Root>
       <Dialog.Trigger className="flex flex-col rounded-md text-left bg-slate-800 p-5 gap-3 overflow-hidden relative outline-none hover:ring-2 hover:ring-slate-600 focus-visible:ring-2 focus-visible:ring-lime-400">
@@ -35,7 +42,7 @@ export function NoteCards(NoteCardProps) {
                 {NoteCardProps.content}
               </p>
             </div>
-            <button type="button" className="w-full bg-slate-800 py-4 text-center text-sm text-slate-300 outline-none font-medium group" >
+            <button type="button" onClick={NoteCardProps.handleDeleteNote} className="w-full bg-slate-800 py-4 text-center text-sm text-slate-300 outline-none font-medium group" >
               Deseja{" "}
               <span className="text-red-400 group-hover:underline">
                 apagar essa nota?
