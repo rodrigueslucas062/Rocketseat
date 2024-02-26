@@ -46,7 +46,7 @@ const Main = () => {
 
     return (
         <div className="mx-auto max-w-6xl my-12 space-y-6 px-5">
-            <Image src={Logo} width={100} height={100} />
+            <Image src={Logo} width={100} height={100} alt="Logo image"/>
 
             <form className="w-full">
                 <input
