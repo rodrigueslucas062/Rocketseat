@@ -16,7 +16,7 @@ const handleDeleteNote = {
   content: String,
 }
 
-export function NoteCards(NoteCardProps, handleDeleteNote) {
+const NoteCards = (NoteCardProps, handleDeleteNote) => {
   return (
     <Dialog.Root>
       <Dialog.Trigger className="flex flex-col rounded-md text-left bg-slate-800 p-5 gap-3 overflow-hidden relative outline-none hover:ring-2 hover:ring-slate-600 focus-visible:ring-2 focus-visible:ring-lime-400">
@@ -54,3 +54,5 @@ export function NoteCards(NoteCardProps, handleDeleteNote) {
     </Dialog.Root>
   );
 }
+
+export default NoteCards;
